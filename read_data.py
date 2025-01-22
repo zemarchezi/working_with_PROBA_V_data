@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from matplotlib.colors import LogNorm
 
+from idl_colorbars import *
 import itertools
 import matplotlib.patheffects as pe
 from matplotlib.patheffects import Stroke, Normal
@@ -44,56 +45,55 @@ def calculateMag(xspace, yspace, year, height):
         equator.append(yspace[idx])    
 
     return inclination, equator, magnt
+def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 
-def zebra_frame(self, lw=3, crs=None, zorder=None, iFlag_outer_frame_in = None):    
-    # Alternate black and white line segments
-    bws = itertools.cycle(["k", "w"])
-    self.spines["geo"].set_visible(False)
+    ax.spines["geo"].set_visible(False)
+    left, right, bot, top = ax.get_extent()
     
-    if iFlag_outer_frame_in is not None:
-        #get the map spatial reference        
-        left, right, bottom, top = self.get_extent()
-        crs_map = self.projection
-        xticks = np.arange(left, right+(right-left)/9, (right-left)/8)
-        yticks = np.arange(bottom, top+(top-bottom)/9, (top-bottom)/8)
-        #check spatial reference are the same           
-        pass
-    else:        
-        crs_map =  crs
-        xticks = sorted([*self.get_xticks()])
-        xticks = np.unique(np.array(xticks))        
-        yticks = sorted([*self.get_yticks()])
-        yticks = np.unique(np.array(yticks))        
+    # Alternate black and white line segments
+    bws = itertools.cycle(["k", "white"])
 
+    xticks = sorted([left, *ax.get_xticks(), right])
+    xticks = np.unique(np.array(xticks))
+    yticks = sorted([bot, *ax.get_yticks(), top])
+    yticks = np.unique(np.array(yticks))
     for ticks, which in zip([xticks, yticks], ["lon", "lat"]):
         for idx, (start, end) in enumerate(zip(ticks, ticks[1:])):
             bw = next(bws)
             if which == "lon":
                 xs = [[start, end], [start, end]]
-                ys = [[yticks[0], yticks[0]], [yticks[-1], yticks[-1]]]
+                ys = [[bot, bot], [top, top]]
             else:
-                xs = [[xticks[0], xticks[0]], [xticks[-1], xticks[-1]]]
+                xs = [[left, left], [right, right]]
                 ys = [[start, end], [start, end]]
 
-            # For first and last lines, used the "projecting" effect
+            # For first and lastlines, used the "projecting" effect
             capstyle = "butt" if idx not in (0, len(ticks) - 2) else "projecting"
             for (xx, yy) in zip(xs, ys):
-                self.plot(xx, yy, color=bw, linewidth=max(0, lw - self.spines["geo"].get_linewidth()*2), clip_on=False,
-                    transform=crs_map, zorder=zorder, solid_capstyle=capstyle,
+                ax.plot(
+                    xx,
+                    yy,
+                    color=bw,
+                    linewidth=lw,
+                    clip_on=False,
+                    transform=crs,
+                    zorder=zorder,
+                    solid_capstyle=capstyle,
                     # Add a black border to accentuate white segments
                     path_effects=[
-                        Stroke(linewidth=lw, foreground="black"),
-                        Normal(),
+                        pe.Stroke(linewidth=lw + 1, foreground="black"),
+                        pe.Normal(),
                     ],
                 )
 #%%
 
-xspace = np.arange(-180,181,0.5)
-yspace = np.arange(-90,91, 0.5)
-incl, euator, magnt = calculateMag(xspace, yspace, 2024., 100)
+# xspace = np.arange(-180,181,0.5)
+# yspace = np.arange(-90,91, 0.5)
+# incl, euator, magnt = calculateMag(xspace, yspace, 2024., 100)
 
   # Print each line (or process it as needed)
 # %%
+PATH = "/Users/jose/sat_data/proba-V/"
 
 day1 = 1
 day2 = 10
@@ -111,8 +111,8 @@ columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl
  'Bvec-2', 'Long', 'Lat', 'Rad', 'PitchU', 'BvecU-0', 'BvecU-1', 'BvecU-2', 'BU', 'LU', 'Rinv', 
  'Lat_mag', 'Lat_inv', 'MLTU', 'PitchI', 'BvecI-0', 'BvecI-1', 'BvecI-2', 'BI', 'LI', 'MLTI']
 for day in range(day1,day2+1):
-    PATH = f'/Users/jose/Downloads/PROBAV_EPT_PersonalDataSet/PROBAV_EPT_202405{day:02d}_L1d.dat.gz'
-    data = np.loadtxt(PATH,skiprows=25)
+    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_202405{day:02d}_L1d.dat.gz'
+    data = np.loadtxt(data_path,skiprows=25)
 
     df = pd.DataFrame(data, columns=columns)
 
@@ -135,49 +135,43 @@ longitudes = dados['Long']
 latitudes = dados['Lat']
 values = dados['e-fl-00']
 
+mycmap=getcmap(13)
+
 # Set up the map
 fig = plt.figure(figsize=(14, 14), dpi=200)
 
 # crs = ccrs.Orthographic(central_longitude=-45, central_latitude=-5)
-crs = ccrs.PlateCarree(central_longitude=0,)
+crs = ccrs.PlateCarree(central_longitude=0)
 
-
+fig = plt.figure(figsize=(14, 14))
 ax = fig.add_subplot(projection=crs)
 
-ax.coastlines(resolution='110m')
-# ax.set_extent((-180, -180, -45, 5))
-gl = ax.gridlines(draw_labels=True, linestyle="--", color="gray", alpha=0.7)
-# gl.top_labels = False  # Remove top labels
-# gl.right_labels = False  # Remove right labels
-# gl.xformatter = None  # Optional: Remove formatting for longitude
-# gl.yformatter = None
-gl.xlocator = plt.FixedLocator(np.arange(-180, 181, 20))  # Longitudes every 10 degrees
-gl.ylocator = plt.FixedLocator(np.arange(-90, 91, 20))
+ax.coastlines()
+ax.set_extent((-180, 180, -90, 90))
+# ax.set_xticks((-180, -180, -90, -90))
+# ax.set_yticks((25, 30, 35, 40))
 
+add_zebra_frame(ax, crs=crs)
 
-# gl = ax.gridlines(crs=crs, draw_labels=False,
-#                   linewidth=2, color='gray', alpha=0.5, linestyle='--')
+gl = ax.gridlines(crs=crs, draw_labels=True,
+                  linewidth=2, color='gray', alpha=0.5, linestyle='--')
 
-# gl.xformatter = LONGITUDE_FORMATTER
-# gl.yformatter = LATITUDE_FORMATTER
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
 
-# m = Basemap(projection='cyl', resolution='c',
-#             llcrnrlat=-90, urcrnrlat=10,
-#             llcrnrlon=-110, urcrnrlon=-30, ax=ax)
-# zebra_frame(ax, crs=crs)
-# Draw map features
-# m.drawcoastlines()
-# m.drawparallels(np.arange(-90., 91., 30.), labels=[1, 0, 0, 0])
-# m.drawmeridians(np.arange(-180., 181., 60.), labels=[0, 0, 0, 1])
+# ax.gridlines(draw_labels=True, dms=True, x_inline=False, y_inline=False)
+
+# ax.clabel(CS, inline=True, fontsize=10)#, manual=manual_locations)
+# ax.scatter(all_stations["GLongg"].values, all_stations["GLAT"].values, c="red")
 
 # Scatter plot of the data
-sc = ax.scatter(longitudes, latitudes, c=values, cmap='jet', norm=LogNorm(), s=4, alpha=0.8)
+sc = ax.scatter(longitudes, latitudes, c=values, 
+                cmap=mycmap, norm=LogNorm(vmin=1e0, vmax=1e6), s=4, alpha=0.8)
 
 # ax.plot(xspace,euator, color="magenta",label="Magnetic equator",transform=ccrs.PlateCarree() )
 
-# # levels = np.arange(22000, 30000, 40000)
 # CS = ax.contour(xspace, yspace,magnt, cmap='jet', transform=ccrs.PlateCarree())
-# ax.clabel(CS, inline=1, fontsize=10)
+# ax.clabel(CS, inline=True, fontsize=10)#, manual=manual_locations)
 # # Add a colorbar
 cbar = plt.colorbar(sc, pad=0.05, shrink=0.7, orientation='horizontal')
 cbar.set_label(r'MeV$^{-1}$cm$^{-2}$s$^{-1}$sr$^{-1}$', fontsize=14)
