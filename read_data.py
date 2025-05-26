@@ -95,8 +95,8 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 # %%
 PATH = "/Users/jose/sat_data/proba-V/"
 
-day1 = 1
-day2 = 10
+day1 = 10
+day2 = 12
 
 datas = []
 
@@ -135,7 +135,8 @@ longitudes = dados['Long']
 latitudes = dados['Lat']
 values = dados['e-fl-00']
 
-mycmap=getcmap(13)
+mycmap="rainbow"
+# mycmap=getcmap(13)
 
 # Set up the map
 fig = plt.figure(figsize=(14, 14), dpi=200)
