@@ -95,8 +95,8 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 # %%
 PATH = "/Users/jose/sat_data/proba-V/"
 
-day1 = 10
-day2 = 12
+day1 = 11
+day2 = 11
 
 datas = []
 
