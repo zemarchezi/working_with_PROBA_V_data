@@ -1,4 +1,4 @@
-#%%
+#%%https://swe.ssa.esa.int/web/guest/csr-ept-federated
 import numpy as np
 import pandas as pd
 import gzip
@@ -95,8 +95,8 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 # %%
 PATH = "/Users/jose/sat_data/proba-V/"
 
-day1 = 11
-day2 = 11
+day1 = 14
+day2 = 17
 
 datas = []
 
@@ -111,7 +111,7 @@ columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl
  'Bvec-2', 'Long', 'Lat', 'Rad', 'PitchU', 'BvecU-0', 'BvecU-1', 'BvecU-2', 'BU', 'LU', 'Rinv', 
  'Lat_mag', 'Lat_inv', 'MLTU', 'PitchI', 'BvecI-0', 'BvecI-1', 'BvecI-2', 'BI', 'LI', 'MLTI']
 for day in range(day1,day2+1):
-    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_202405{day:02d}_L1d.dat.gz'
+    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_202510{day:02d}_L1d.dat.gz'
     data = np.loadtxt(data_path,skiprows=25)
 
     df = pd.DataFrame(data, columns=columns)
@@ -178,9 +178,9 @@ cbar = plt.colorbar(sc, pad=0.05, shrink=0.7, orientation='horizontal')
 cbar.set_label(r'MeV$^{-1}$cm$^{-2}$s$^{-1}$sr$^{-1}$', fontsize=14)
 
 # Add a title
-plt.title(f"500-600 keV, {day1:02d}-{day2:02d} May 2024 \n", fontsize=16)
+plt.title(f"500-600 keV, {day1:02d}-{day2:02d} Oct 2025 \n", fontsize=16)
 
-plt.savefig(f'proba-v_500-600keV-{day1:02d}-{day2:02d}_May_2024.jpg', dpi=200, bbox_inches='tight')
+plt.savefig(f'proba-v_500-600keV-{day1:02d}-{day2:02d}_Oct_2025.jpg', dpi=200, bbox_inches='tight')
 
 # %%
 
