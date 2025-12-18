@@ -93,10 +93,10 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 
   # Print each line (or process it as needed)
 # %%
-PATH = "/Users/jose/sat_data/proba-V/"
+PATH = "/Users/zemarchezi/sat_data/proba-V/"
 
-day1 = 20
-day2 = 25
+day1 = 18
+day2 = 19
 
 datas = []
 
@@ -111,7 +111,7 @@ columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl
  'Bvec-2', 'Long', 'Lat', 'Rad', 'PitchU', 'BvecU-0', 'BvecU-1', 'BvecU-2', 'BU', 'LU', 'Rinv', 
  'Lat_mag', 'Lat_inv', 'MLTU', 'PitchI', 'BvecI-0', 'BvecI-1', 'BvecI-2', 'BI', 'LI', 'MLTI']
 for day in range(day1,day2+1):
-    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_202510{day:02d}_L1d.dat.gz'
+    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_201707{day:02d}_L1d.dat.gz'
     data = np.loadtxt(data_path,skiprows=25)
 
     df = pd.DataFrame(data, columns=columns)
@@ -130,10 +130,20 @@ for day in range(day1,day2+1):
 
 dados = pd.concat(datas)
 
+# mask = (dados['datetime'] > '2017-07-18 14:30:00') & (dados['datetime'] <= '2017-07-18 15:50:50')
+
+# # mask = (dados['Lat'] <= 15) & (dados['Lat'] >= -60)
+# dados = dados.loc[mask]
+# # mask2 = (dados['Long'] >= -90) & (dados['Long'] <= -20)
+# dados = dados.loc[mask2]
+
 # Assuming your DataFrame is called df and it has 'e-fl-00', 'Long', and 'Lat' columns
 longitudes = dados['Long']
 latitudes = dados['Lat']
 values = dados['e-fl-00']
+
+# plt.figure(figsize=(10,5))
+# plt.plot(np.log(values))
 
 mycmap="rainbow"
 # mycmap=getcmap(13)
@@ -178,7 +188,7 @@ cbar = plt.colorbar(sc, pad=0.05, shrink=0.7, orientation='horizontal')
 cbar.set_label(r'MeV$^{-1}$cm$^{-2}$s$^{-1}$sr$^{-1}$', fontsize=14)
 
 # Add a title
-plt.title(f"500-600 keV, {day1:02d}-{day2:02d} Oct 2025 \n", fontsize=16)
+plt.title(f"500-600 keV, {day1:02d}-{day2:02d} Jul 2025 \n", fontsize=16)
 
 plt.savefig(f'proba-v_500-600keV-{day1:02d}-{day2:02d}_Oct_2025.jpg', dpi=200, bbox_inches='tight')
 
