@@ -93,11 +93,15 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 
   # Print each line (or process it as needed)
 # %%
-PATH = "/Users/zemarchezi/sat_data/proba-V/"
+storm_num = "storm5"
+PATH = f"/Users/zemarchezi/Downloads/probaV_juliano/{storm_num}/"
 
-day1 = 18
-day2 = 19
+year = 2025
+month = 1
 
+
+day1 = 1
+day2 = 7
 datas = []
 
 columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl-01', 'e-fl-02', 'e-fl-03', 
@@ -111,7 +115,7 @@ columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl
  'Bvec-2', 'Long', 'Lat', 'Rad', 'PitchU', 'BvecU-0', 'BvecU-1', 'BvecU-2', 'BU', 'LU', 'Rinv', 
  'Lat_mag', 'Lat_inv', 'MLTU', 'PitchI', 'BvecI-0', 'BvecI-1', 'BvecI-2', 'BI', 'LI', 'MLTI']
 for day in range(day1,day2+1):
-    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_201707{day:02d}_L1d.dat.gz'
+    data_path = f'{PATH}PROBAV_EPT_PersonalDataSet/PROBAV_EPT_{year:04d}{month:02d}{day:02d}_L1d.dat.gz'
     data = np.loadtxt(data_path,skiprows=25)
 
     df = pd.DataFrame(data, columns=columns)
@@ -188,9 +192,9 @@ cbar = plt.colorbar(sc, pad=0.05, shrink=0.7, orientation='horizontal')
 cbar.set_label(r'MeV$^{-1}$cm$^{-2}$s$^{-1}$sr$^{-1}$', fontsize=14)
 
 # Add a title
-plt.title(f"500-600 keV, {day1:02d}-{day2:02d} Jul 2025 \n", fontsize=16)
+plt.title(f"500-600 keV, {day1:02d}-{day2:02d} {month}-{year} \n", fontsize=16)
 
-plt.savefig(f'proba-v_500-600keV-{day1:02d}-{day2:02d}_Oct_2025.jpg', dpi=200, bbox_inches='tight')
+plt.savefig(f'{storm_num}_proba-v_500-600keV-{day1:02d}-{day2:02d}_{month}_{year}.jpg', dpi=200, bbox_inches='tight')
 
 # %%
 
