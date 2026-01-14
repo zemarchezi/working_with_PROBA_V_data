@@ -93,15 +93,15 @@ def add_zebra_frame(ax, lw=2, crs="pcarree", zorder=None):
 
   # Print each line (or process it as needed)
 # %%
-storm_num = "storm5"
+storm_num = "storm1"
 PATH = f"/Users/zemarchezi/Downloads/probaV_juliano/{storm_num}/"
 
-year = 2025
-month = 1
+year = 2024
+month = 7
 
 
-day1 = 1
-day2 = 7
+day1 = 18
+day2 = 18
 datas = []
 
 columns = ['Y', 'M', 'D', 'H', 'MI', 'S', 'mS', 'AMJD', 'FLAG', 'e-fl-00', 'e-fl-01', 'e-fl-02', 'e-fl-03', 
